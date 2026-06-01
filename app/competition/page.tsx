@@ -1,6 +1,7 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import EChart from '@/components/charts/EChart'
 import DataFreshness from '@/components/DataFreshness'
@@ -15,9 +16,20 @@ export default function CompetitionPage() {
 }
 
 function CompetitionInner() {
+  const searchParams = useSearchParams()
   const [houseManageNo, setHouseManageNo] = useState('')
   const [input, setInput] = useState('')
   const [submitted, setSubmitted] = useState(false)
+
+  // 분양정보 상세패널에서 ?hmn= 으로 넘어온 경우 자동 조회
+  useEffect(() => {
+    const hmn = searchParams.get('hmn')
+    if (hmn) {
+      setInput(hmn)
+      setHouseManageNo(hmn)
+      setSubmitted(true)
+    }
+  }, [searchParams])
 
   const { data, isLoading } = useQuery({
     queryKey: ['competition-search', houseManageNo],
