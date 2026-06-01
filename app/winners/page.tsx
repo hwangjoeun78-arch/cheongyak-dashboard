@@ -142,7 +142,7 @@ function WinnersInner() {
           { label: '30대 이하', value: `${(data?.items.reduce((s, i) => s + (i.AGE_30 ?? 0), 0) ?? 0).toLocaleString()}명` },
           { label: '40대 이상', value: `${(data?.items.reduce((s, i) => s + (i.AGE_40 ?? 0) + (i.AGE_50 ?? 0) + (i.AGE_60 ?? 0), 0) ?? 0).toLocaleString()}명` },
         ].map((card, i) => (
-          <div key={i} className="bg-white rounded-xl border p-4">
+          <div key={i} className="cy-panel" style={{padding:16}}>
             <p className="text-xs text-gray-500">{card.label}</p>
             {isLoading
               ? <div className="h-6 w-20 bg-gray-200 animate-pulse rounded mt-1" />
@@ -153,24 +153,24 @@ function WinnersInner() {
 
       {/* 코로플레스 지도 + 시도별 막대 */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border p-5">
+        <div className="cy-panel cy-panel-pad">
           <h2 className="font-semibold text-gray-800 mb-3">시도별 당첨자 현황 (지도)</h2>
           <KoreaMap data={mapData} loading={isLoading} valueLabel="명" />
         </div>
-        <div className="bg-white rounded-xl border p-5">
+        <div className="cy-panel cy-panel-pad">
           <h2 className="font-semibold text-gray-800 mb-3">시도별 당첨자 Top 10</h2>
           <EChart option={sidoBarOption} height={400} loading={isLoading} />
         </div>
       </div>
 
       {/* 월별 연령대별 누적 막대 */}
-      <div className="bg-white rounded-xl border p-5">
+      <div className="cy-panel cy-panel-pad">
         <h2 className="font-semibold text-gray-800 mb-3">월별 연령대별 당첨자</h2>
         <EChart option={ageBarOption} height={260} loading={isLoading} />
       </div>
 
       {/* 테이블 */}
-      <div className="bg-white rounded-xl border overflow-hidden">
+      <div className="cy-panel overflow-hidden">
         <div className="p-4 border-b">
           <h2 className="font-semibold text-gray-800">지역별 당첨자 상세</h2>
         </div>

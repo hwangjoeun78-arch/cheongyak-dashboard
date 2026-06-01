@@ -116,7 +116,7 @@ function CompetitionInner() {
         </p>
       </div>
 
-      <div className="bg-white rounded-xl border p-5">
+      <div className="cy-panel cy-panel-pad">
         <h2 className="font-semibold text-gray-800 mb-4">단지 경쟁률 조회</h2>
         <div className="flex gap-3">
           <input
@@ -159,7 +159,7 @@ function CompetitionInner() {
                 { label: '총 공급세대', value: `${rank1Items.reduce((s: number, i: any) => s + Number(i.SUPLY_HSHLDCO || 0), 0).toLocaleString()}세대` },
                 { label: '총 접수건수', value: `${rank1Items.reduce((s: number, i: any) => s + Number(i.REQ_CNT || 0), 0).toLocaleString()}건` },
               ].map((card, i) => (
-                <div key={i} className="bg-white rounded-xl border p-4">
+                <div key={i} className="cy-panel" style={{padding:16}}>
                   <p className="text-xs text-gray-500">{card.label}</p>
                   <p className="text-xl font-bold text-gray-900 mt-0.5">{card.value}</p>
                 </div>
@@ -170,7 +170,7 @@ function CompetitionInner() {
           {/* 차트들 */}
           {!isLoading && items.length > 0 && (
             <>
-              <div className="bg-white rounded-xl border p-5">
+              <div className="cy-panel cy-panel-pad">
                 <h2 className="font-semibold text-gray-800 mb-3">평형별 1순위 경쟁률</h2>
                 <div className="flex gap-3 text-xs mb-2">
                   <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm bg-green-500 inline-block" /> 10:1 미만</span>
@@ -181,11 +181,11 @@ function CompetitionInner() {
               </div>
 
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <div className="bg-white rounded-xl border p-5">
+                <div className="cy-panel cy-panel-pad">
                   <h2 className="font-semibold text-gray-800 mb-3">1순위 vs 2순위 경쟁률 비교</h2>
                   <EChart option={compareOption} height={260} />
                 </div>
-                <div className="bg-white rounded-xl border p-5">
+                <div className="cy-panel cy-panel-pad">
                   <h2 className="font-semibold text-gray-800 mb-3">공급세대 vs 접수건수</h2>
                   <EChart option={supplyOption} height={260} />
                 </div>
@@ -194,7 +194,7 @@ function CompetitionInner() {
           )}
 
           {/* 테이블 */}
-          <div className="bg-white rounded-xl border overflow-hidden">
+          <div className="cy-panel overflow-hidden">
             <div className="p-4 border-b">
               <h2 className="font-semibold text-gray-800">경쟁률 상세</h2>
             </div>

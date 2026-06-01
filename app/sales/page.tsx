@@ -3,9 +3,11 @@
 import { Suspense, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchSales } from '@/lib/api-client'
-import { formatDate, getRecentDateRange, getStatusBadge } from '@/lib/utils'
+import { formatDate, getRecentDateRange } from '@/lib/utils'
 import EChart from '@/components/charts/EChart'
 import DataFreshness from '@/components/DataFreshness'
+import StatusBadge, { getStatus } from '@/components/ui/StatusBadge'
+import Dday from '@/components/ui/Dday'
 
 const SIDO_LIST = ['', '서울', '경기', '인천', '부산', '대구', '광주', '대전', '울산', '세종', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주']
 
@@ -107,42 +109,41 @@ function SalesInner() {
             return total > 0 ? `${Math.round(minyeong / total * 100)}%` : '-'
           })() },
         ].map((card, i) => (
-          <div key={i} className="bg-white rounded-xl border p-4">
-            <p className="text-xs text-gray-500">{card.label}</p>
+          <div key={i} className="cy-card cy-panel" style={{ padding: 16 }}>
+            <p style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--ink-2)' }}>{card.label}</p>
             {isLoading
-              ? <div className="h-6 w-20 bg-gray-200 animate-pulse rounded mt-1" />
-              : <p className="text-xl font-bold text-gray-900 mt-0.5">{card.value}</p>
-            }
+              ? <div className="h-7 w-20 animate-pulse rounded mt-1" style={{ background: 'var(--bg-2)' }} />
+              : <p className="num" style={{ fontSize: 24, fontWeight: 800, color: 'var(--ink)', marginTop: 2 }}>{card.value}</p>}
           </div>
         ))}
       </div>
 
       {/* 차트 */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2 bg-white rounded-xl border p-5">
-          <h2 className="font-semibold text-gray-800 mb-3">지역별 공급세대 (Top 10)</h2>
+        <div className="xl:col-span-2 cy-panel cy-panel-pad">
+          <h2 className="cy-h2">지역별 공급세대 (Top 10)</h2>
           <EChart option={barOption} height={260} loading={isLoading} />
         </div>
-        <div className="bg-white rounded-xl border p-5">
-          <h2 className="font-semibold text-gray-800 mb-3">주택구분 비율</h2>
+        <div className="cy-panel cy-panel-pad">
+          <h2 className="cy-h2">주택구분 비율</h2>
           <EChart option={pieOption} height={260} loading={isLoading} />
         </div>
       </div>
 
       {/* 테이블 */}
-      <div className="bg-white rounded-xl border overflow-hidden">
+      <div className="cy-panel overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-500 text-xs">
+            <thead className="text-xs" style={{ background: 'var(--surface-2)', color: 'var(--ink-3)' }}>
               <tr>
                 <th className="px-4 py-3 text-left">단지명</th>
                 <th className="px-4 py-3 text-left">지역</th>
                 <th className="px-4 py-3 text-left">구분</th>
                 <th className="px-4 py-3 text-center">공급세대</th>
                 <th className="px-4 py-3 text-left">청약기간</th>
-                <th className="px-4 py-3 text-left">당첨자발표</th>
+                <th className="px-4 py-3 text-left">마감</th>
                 <th className="px-4 py-3 text-center">상태</th>
-                <th className="px-4 py-3 text-left text-gray-400">관리번호</th>
+                <th className="px-4 py-3 text-left">관리번호</th>
               </tr>
             </thead>
             <tbody>
@@ -154,28 +155,22 @@ function SalesInner() {
                   ))
                 : data?.items.length === 0
                   ? <tr><td colSpan={8} className="px-4 py-12 text-center text-gray-400">해당 조건의 분양 데이터가 없습니다.</td></tr>
-                  : data?.items.map((item, i) => {
-                      const status = getStatusBadge(item.RCEPT_BGNDE, item.RCEPT_ENDDE)
-                      const badgeClass = { default: 'bg-blue-100 text-blue-700', secondary: 'bg-gray-100 text-gray-600', destructive: 'bg-red-100 text-red-600', outline: 'bg-white border text-gray-500' }[status.variant]
-                      return (
-                        <tr key={i} className="border-t hover:bg-gray-50 transition-colors">
-                          <td className="px-4 py-3 font-medium text-gray-900">
-                            {item.HMPG_ADRES
-                              ? <a href={item.HMPG_ADRES} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{item.HOUSE_NM}</a>
-                              : item.HOUSE_NM}
-                          </td>
-                          <td className="px-4 py-3 text-gray-600">{item.SUBSCRPT_AREA_CODE_NM}</td>
-                          <td className="px-4 py-3 text-gray-500 text-xs">{item.HOUSE_DTL_SECD_NM || '-'}</td>
-                          <td className="px-4 py-3 text-center text-gray-600">{item.TOT_SUPLY_HSHLDCO ? `${Number(item.TOT_SUPLY_HSHLDCO).toLocaleString()}세대` : '-'}</td>
-                          <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{formatDate(item.RCEPT_BGNDE)} ~ {formatDate(item.RCEPT_ENDDE)}</td>
-                          <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">{formatDate(item.PRZWNER_PRESNATN_DE)}</td>
-                          <td className="px-4 py-3 text-center">
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${badgeClass}`}>{status.label}</span>
-                          </td>
-                          <td className="px-4 py-3 text-gray-300 text-xs font-mono">{item.HOUSE_MANAGE_NO}</td>
-                        </tr>
-                      )
-                    })
+                  : data?.items.map((item, i) => (
+                      <tr key={i} className="border-t cy-row transition-colors">
+                        <td className="px-4 py-3 font-medium" style={{ color: 'var(--ink)' }}>
+                          {item.HMPG_ADRES
+                            ? <a href={item.HMPG_ADRES} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }} className="hover:underline">{item.HOUSE_NM}</a>
+                            : item.HOUSE_NM}
+                        </td>
+                        <td className="px-4 py-3" style={{ color: 'var(--ink-2)' }}>{item.SUBSCRPT_AREA_CODE_NM}</td>
+                        <td className="px-4 py-3 text-xs" style={{ color: 'var(--ink-3)' }}>{item.HOUSE_DTL_SECD_NM || '-'}</td>
+                        <td className="px-4 py-3 text-center num" style={{ color: 'var(--ink-2)' }}>{item.TOT_SUPLY_HSHLDCO ? `${Number(item.TOT_SUPLY_HSHLDCO).toLocaleString()}세대` : '-'}</td>
+                        <td className="px-4 py-3 text-xs whitespace-nowrap num" style={{ color: 'var(--ink-3)' }}>{formatDate(item.RCEPT_BGNDE)} ~ {formatDate(item.RCEPT_ENDDE)}</td>
+                        <td className="px-4 py-3 whitespace-nowrap"><Dday dateStr={item.RCEPT_ENDDE} label="마감" /></td>
+                        <td className="px-4 py-3 text-center"><StatusBadge status={getStatus(item.RCEPT_BGNDE, item.RCEPT_ENDDE)} /></td>
+                        <td className="px-4 py-3 text-xs font-mono" style={{ color: 'var(--ink-4)' }}>{item.HOUSE_MANAGE_NO}</td>
+                      </tr>
+                    ))
               }
             </tbody>
           </table>

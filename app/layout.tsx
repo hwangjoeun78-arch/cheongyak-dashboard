@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import QueryProvider from "@/components/QueryProvider";
-
-const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "청약 대시보드",
@@ -18,7 +15,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className={`${geist.className} bg-gray-50 min-h-screen`}>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+        />
+      </head>
+      <body style={{ background: "var(--bg)", minHeight: "100vh" }}>
         <QueryProvider>
           <Navbar />
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -137,38 +137,26 @@ function HomeInner() {
       {/* KPI 카드 */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          {
-            icon: Building2, label: '분양 단지', color: 'bg-blue-500',
-            value: isLoading ? '-' : `${(salesData?.matchCount ?? 0).toLocaleString()}건`,
-            sub: '필터 기준',
-          },
-          {
-            icon: MapPin, label: '공급 지역 수', color: 'bg-purple-500',
-            value: isLoading ? '-' : `${Object.keys(sidoSupply).length}개`,
-            sub: '지역',
-          },
-          {
-            icon: Users, label: '당첨자 합계', color: 'bg-green-500',
-            value: isLoading ? '-' : `${totalWinners.toLocaleString()}명`,
-            sub: '연령대 합산',
-          },
-          {
-            icon: TrendingUp, label: '총 공급세대', color: 'bg-orange-500',
-            value: isLoading ? '-' : `${Object.values(sidoSupply).reduce((a, b) => a + b, 0).toLocaleString()}세대`,
-            sub: '조회 기간',
-          },
+          { icon: Building2, label: '분양 단지', tone: 'primary',
+            value: isLoading ? '-' : `${(salesData?.matchCount ?? 0).toLocaleString()}건`, sub: '필터 기준' },
+          { icon: MapPin, label: '공급 지역 수', tone: 'violet',
+            value: isLoading ? '-' : `${Object.keys(sidoSupply).length}개`, sub: '지역' },
+          { icon: Users, label: '당첨자 합계', tone: 'green',
+            value: isLoading ? '-' : `${totalWinners.toLocaleString()}명`, sub: '연령대 합산' },
+          { icon: TrendingUp, label: '총 공급세대', tone: 'amber',
+            value: isLoading ? '-' : `${Object.values(sidoSupply).reduce((a, b) => a + b, 0).toLocaleString()}세대`, sub: '조회 기간' },
         ].map((card, i) => (
-          <div key={i} className="bg-white rounded-xl border p-5 flex items-start gap-3">
-            <div className={`p-2.5 rounded-lg ${card.color}`}>
-              <card.icon className="h-5 w-5 text-white" />
-            </div>
+          <div key={i} className="cy-card flex items-start gap-3"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', padding: 18, boxShadow: 'var(--sh-xs)' }}>
+            <span style={{ display: 'grid', placeItems: 'center', width: 38, height: 38, borderRadius: 10, color: `var(--${card.tone}-ink)`, background: `var(--${card.tone}-tint)` }}>
+              <card.icon className="h-5 w-5" />
+            </span>
             <div>
-              <p className="text-xs text-gray-500">{card.label}</p>
+              <p style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--ink-2)' }}>{card.label}</p>
               {isLoading
-                ? <div className="h-6 w-20 bg-gray-200 animate-pulse rounded mt-1" />
-                : <p className="text-xl font-bold text-gray-900 mt-0.5">{card.value}</p>
-              }
-              <p className="text-xs text-gray-400 mt-0.5">{card.sub}</p>
+                ? <div className="h-7 w-20 animate-pulse rounded mt-1" style={{ background: 'var(--bg-2)' }} />
+                : <p className="num" style={{ fontSize: 24, fontWeight: 800, color: 'var(--ink)', marginTop: 2, lineHeight: 1.1 }}>{card.value}</p>}
+              <p style={{ fontSize: 11.5, color: 'var(--ink-4)', marginTop: 2 }}>{card.sub}</p>
             </div>
           </div>
         ))}
@@ -176,31 +164,31 @@ function HomeInner() {
 
       {/* 차트 1행: 지역별 공급세대 막대 + 연령별 도넛 */}
       <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-        <div className="xl:col-span-3 bg-white rounded-xl border p-5">
-          <h2 className="font-semibold text-gray-800 mb-3">지역별 공급세대 현황 (Top 10)</h2>
+        <div className="xl:col-span-3 cy-panel cy-panel-pad">
+          <h2 className="cy-h2">지역별 공급세대 현황 (Top 10)</h2>
           <EChart option={supplyBarOption} height={280} loading={salesLoading} />
         </div>
-        <div className="xl:col-span-2 bg-white rounded-xl border p-5">
-          <h2 className="font-semibold text-gray-800 mb-3">연령별 당첨자 비율</h2>
+        <div className="xl:col-span-2 cy-panel cy-panel-pad">
+          <h2 className="cy-h2">연령별 당첨자 비율</h2>
           <EChart option={agePieOption} height={280} loading={winnersLoading} />
         </div>
       </div>
 
       {/* 차트 2행: 월별 당첨자 추이 */}
-      <div className="bg-white rounded-xl border p-5">
-        <h2 className="font-semibold text-gray-800 mb-3">월별 당첨자 추이</h2>
+      <div className="cy-panel cy-panel-pad">
+        <h2 className="cy-h2">월별 당첨자 추이</h2>
         <EChart option={monthlyLineOption} height={220} loading={winnersLoading} />
       </div>
 
       {/* 최근 분양 테이블 */}
-      <div className="bg-white rounded-xl border overflow-hidden">
-        <div className="p-4 border-b flex items-center justify-between">
-          <h2 className="font-semibold text-gray-800">최근 분양 현황</h2>
-          <a href="/sales" className="text-xs text-blue-600 hover:underline">전체 보기 →</a>
+      <div className="cy-panel overflow-hidden">
+        <div className="p-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border)' }}>
+          <h2 className="cy-h2" style={{ marginBottom: 0 }}>최근 분양 현황</h2>
+          <a href="/sales" className="text-xs cy-link">전체 보기 →</a>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-500 text-xs">
+            <thead className="cy-thead">
               <tr>
                 <th className="px-4 py-3 text-left">단지명</th>
                 <th className="px-4 py-3 text-left">지역</th>
@@ -219,20 +207,20 @@ function HomeInner() {
                     </tr>
                   ))
                 : salesData?.items.slice(0, 8).map((item, i) => (
-                    <tr key={i} className="border-t hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 font-medium text-gray-900">
+                    <tr key={i} className="cy-row" style={{ borderTop: '1px solid var(--border)' }}>
+                      <td className="px-4 py-3 font-medium" style={{ color: 'var(--ink)' }}>
                         {item.HMPG_ADRES
-                          ? <a href={item.HMPG_ADRES} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{item.HOUSE_NM}</a>
+                          ? <a href={item.HMPG_ADRES} target="_blank" rel="noopener noreferrer" className="cy-link">{item.HOUSE_NM}</a>
                           : item.HOUSE_NM}
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{item.SUBSCRPT_AREA_CODE_NM}</td>
-                      <td className="px-4 py-3 text-center text-gray-600">
+                      <td className="px-4 py-3" style={{ color: 'var(--ink-2)' }}>{item.SUBSCRPT_AREA_CODE_NM}</td>
+                      <td className="px-4 py-3 text-center num" style={{ color: 'var(--ink-2)' }}>
                         {item.TOT_SUPLY_HSHLDCO ? `${Number(item.TOT_SUPLY_HSHLDCO).toLocaleString()}세대` : '-'}
                       </td>
-                      <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
+                      <td className="px-4 py-3 text-xs whitespace-nowrap num" style={{ color: 'var(--ink-3)' }}>
                         {formatDate(item.RCEPT_BGNDE)} ~ {formatDate(item.RCEPT_ENDDE)}
                       </td>
-                      <td className="px-4 py-3 text-gray-500 text-xs">{formatDate(item.PRZWNER_PRESNATN_DE)}</td>
+                      <td className="px-4 py-3 text-xs num" style={{ color: 'var(--ink-3)' }}>{formatDate(item.PRZWNER_PRESNATN_DE)}</td>
                     </tr>
                   ))
               }
