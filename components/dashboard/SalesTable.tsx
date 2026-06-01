@@ -37,7 +37,7 @@ export default function SalesTable({ items, loading }: Props) {
             <tr>
               <th className="px-4 py-3 text-left">단지명</th>
               <th className="px-4 py-3 text-left">지역</th>
-              <th className="px-4 py-3 text-left">공급규모</th>
+              <th className="px-4 py-3 text-center">공급규모</th>
               <th className="px-4 py-3 text-left">청약기간</th>
               <th className="px-4 py-3 text-left">상태</th>
             </tr>
@@ -51,7 +51,7 @@ export default function SalesTable({ items, loading }: Props) {
               </tr>
             ) : (
               items.map((item, i) => {
-                const status = getStatusBadge(item.rceptBgnde, item.rceptEndde)
+                const status = getStatusBadge(item.RCEPT_BGNDE, item.RCEPT_ENDDE)
                 const badgeClass = {
                   default: 'bg-blue-100 text-blue-700',
                   secondary: 'bg-gray-100 text-gray-600',
@@ -62,23 +62,19 @@ export default function SalesTable({ items, loading }: Props) {
                 return (
                   <tr key={i} className="border-t hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3 font-medium text-gray-900">
-                      {item.hmpgAdres ? (
-                        <a
-                          href={item.hmpgAdres}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
-                        >
-                          {item.houseName}
+                      {item.HMPG_ADRES ? (
+                        <a href={item.HMPG_ADRES} target="_blank" rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline">
+                          {item.HOUSE_NM}
                         </a>
-                      ) : (
-                        item.houseName
-                      )}
+                      ) : item.HOUSE_NM}
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{item.sido} {item.gugun}</td>
-                    <td className="px-4 py-3 text-gray-600">{item.totSuplyHshldco ? `${Number(item.totSuplyHshldco).toLocaleString()}세대` : '-'}</td>
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
-                      {formatDate(item.rceptBgnde)} ~ {formatDate(item.rceptEndde)}
+                    <td className="px-4 py-3 text-gray-600">{item.SUBSCRPT_AREA_CODE_NM}</td>
+                    <td className="px-4 py-3 text-center text-gray-600">
+                      {item.TOT_SUPLY_HSHLDCO ? `${Number(item.TOT_SUPLY_HSHLDCO).toLocaleString()}세대` : '-'}
+                    </td>
+                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap text-xs">
+                      {formatDate(item.RCEPT_BGNDE)} ~ {formatDate(item.RCEPT_ENDDE)}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${badgeClass}`}>

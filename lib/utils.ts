@@ -5,12 +5,37 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+// YYYY-MM-DD 또는 YYYYMMDD → YYYY.MM.DD
 export function formatDate(dateStr: string): string {
-  if (!dateStr || dateStr.length < 8) return '-'
-  const y = dateStr.slice(0, 4)
-  const m = dateStr.slice(4, 6)
-  const d = dateStr.slice(6, 8)
-  return `${y}.${m}.${d}`
+  if (!dateStr) return '-'
+  const clean = dateStr.replace(/-/g, '')
+  if (clean.length < 8) return dateStr
+  return `${clean.slice(0, 4)}.${clean.slice(4, 6)}.${clean.slice(6, 8)}`
+}
+
+// YYYYMM → YYYY.MM
+export function formatYearMonth(ym: string): string {
+  if (!ym || ym.length < 6) return ym ?? '-'
+  return `${ym.slice(0, 4)}.${ym.slice(4, 6)}`
+}
+
+// 오늘 기준 최근 N개월 (YYYYMM 형식)
+export function getRecentYearMonths(months = 3): { from: string; to: string } {
+  const now = new Date()
+  const to = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`
+  const d = new Date(now.getFullYear(), now.getMonth() - months + 1, 1)
+  const from = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`
+  return { from, to }
+}
+
+// 오늘 기준 최근 N개월 (YYYY-MM-DD 형식)
+export function getRecentDateRange(months = 3): { startDate: string; endDate: string } {
+  const now = new Date()
+  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+  const start = new Date(now.getFullYear(), now.getMonth() - months + 1, 1)
+  const fmt = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  return { startDate: fmt(start), endDate: fmt(end) }
 }
 
 export function formatNumber(value: string | number | undefined): string {

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import axios from 'axios'
-import { parseXMLResponse, extractItems } from '@/lib/parsers'
-import { WinnerItem } from '@/lib/types'
 
 export const maxDuration = 10
 
-const BASE_URL = 'http://apis.data.go.kr/B552555/APTInfoService2'
+// 청약 신청·당첨자 정보 조회 서비스 (ApplyhomeStatSvc)
+// Base URL: https://api.odcloud.kr/api/ApplyhomeStatSvc/v1/
+const BASE_URL = 'https://api.odcloud.kr/api/ApplyhomeStatSvc/v1'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
@@ -15,27 +15,48 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'API 키가 설정되지 않았습니다.' }, { status: 500 })
   }
 
+  // STAT_DE: YYYYMM 형식
+  const statDeGte = searchParams.get('statDeGte') // e.g. 202501
+  const statDeLte = searchParams.get('statDeLte') // e.g. 202506
+  const subscrptAreaCode = searchParams.get('subscrptAreaCode')
+  const type      = searchParams.get('type') ?? 'area' // area | age
+  const page      = searchParams.get('pageNo') ?? '1'
+  const perPage   = searchParams.get('numOfRows') ?? '20'
+
+  const params: Record<string, string> = {
+    page,
+    perPage,
+    serviceKey,
+  }
+  if (statDeGte)         params['cond[STAT_DE::GTE]'] = statDeGte
+  if (statDeLte)         params['cond[STAT_DE::LTE]'] = statDeLte
+  if (subscrptAreaCode)  params['cond[SUBSCRPT_AREA_CODE::EQ]'] = subscrptAreaCode
+
+  // 지역별 당첨자 or 연령별 당첨자
+  const endpoint = type === 'age'
+    ? 'getAPTPrzwnerAgeStat'
+    : 'getAPTPrzwnerAreaStat'
+
   try {
-    const res = await axios.get(`${BASE_URL}/getAPTLttotPblancDetail`, {
-      params: {
-        serviceKey,
-        startDate: searchParams.get('startDate') ?? '',
-        endDate: searchParams.get('endDate') ?? '',
-        numOfRows: searchParams.get('numOfRows') ?? '20',
-        pageNo: searchParams.get('pageNo') ?? '1',
-      },
-      responseType: 'text',
+    const res = await axios.get(`${BASE_URL}/${endpoint}`, {
+      params,
       timeout: 8000,
+      validateStatus: () => true,
     })
 
-    const parsed = await parseXMLResponse(res.data)
-    const { items, totalCount } = extractItems<WinnerItem>(parsed)
+    if (res.status !== 200) {
+      return NextResponse.json(
+        { error: `공공데이터 API 오류 (${res.status})`, detail: res.data },
+        { status: 500 }
+      )
+    }
 
+    const json = res.data
     return NextResponse.json({
-      items,
-      totalCount,
-      pageNo: Number(searchParams.get('pageNo') ?? 1),
-      numOfRows: Number(searchParams.get('numOfRows') ?? 20),
+      items: json.data ?? [],
+      totalCount: json.totalCount ?? 0,
+      pageNo: Number(page),
+      numOfRows: Number(perPage),
     })
   } catch (err: any) {
     console.error('[/api/winners]', err.message)

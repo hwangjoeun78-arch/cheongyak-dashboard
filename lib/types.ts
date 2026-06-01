@@ -1,79 +1,90 @@
-// 분양정보 조회 서비스
+// ============================================================
+// 1. 분양정보 조회 서비스 (ApplyhomeInfoDetailSvc)
+//    endpoint: getAPTLttotPblancDetail
+// ============================================================
 export interface SaleItem {
-  houseManageNo: string      // 주택관리번호
-  houseName: string          // 단지명
-  houseSecd: string          // 주택구분코드
-  houseSecd_nm: string       // 주택구분명
-  sido: string               // 시도
-  gugun: string              // 구군
-  dong: string               // 동
-  hssplyAdres: string        // 공급위치
-  totSuplyHshldco: string    // 공급규모(총)
-  rceptBgnde: string         // 청약접수시작일
-  rceptEndde: string         // 청약접수종료일
-  przwnerPresnatnDe: string  // 당첨자발표일
-  cntrctCnclsBgnde: string   // 계약시작일
-  cntrctCnclsEndde: string   // 계약종료일
-  hmpgAdres: string          // 홈페이지주소
-  bsnsMbyNm: string          // 사업주체명
-  mdatTrgetAreaSecd: string  // 투기과열지구여부
-  rentSehouseYn: string      // 임대세대포함여부
-  mdhsTy: string             // 중대형평형여부
+  HOUSE_MANAGE_NO: string       // 주택관리번호
+  PBLANC_NO: string             // 공고번호
+  HOUSE_NM: string              // 주택명
+  HOUSE_SECD: string            // 주택구분코드
+  HOUSE_SECD_NM: string         // 주택구분코드명
+  HOUSE_DTL_SECD: string        // 주택상세구분코드
+  HOUSE_DTL_SECD_NM: string     // 주택상세구분코드명
+  RENT_SECD: string             // 분양구분코드
+  RENT_SECD_NM: string          // 분양구분코드명
+  SUBSCRPT_AREA_CODE: string    // 공급지역코드
+  SUBSCRPT_AREA_CODE_NM: string // 공급지역명
+  HSSPLY_ADRES: string          // 공급위치
+  TOT_SUPLY_HSHLDCO: string     // 공급규모
+  RCRIT_PBLANC_DE: string       // 모집공고일 (YYYY-MM-DD)
+  RCEPT_BGNDE: string           // 청약접수시작일
+  RCEPT_ENDDE: string           // 청약접수종료일
+  SPSPLY_RCEPT_BGNDE: string    // 특별공급 접수시작일
+  SPSPLY_RCEPT_ENDDE: string    // 특별공급 접수종료일
+  PRZWNER_PRESNATN_DE: string   // 당첨자발표일
+  CNTRCT_CNCLS_BGNDE: string    // 계약시작일
+  CNTRCT_CNCLS_ENDDE: string    // 계약종료일
+  HMPG_ADRES: string            // 홈페이지주소
+  CNSTRCT_ENTRPS_NM: string     // 건설업체명
+  BSNSMBY_NM: string            // 사업주체명
+  MDAT_TRGET_AREA_SECD: string  // 투기과열지구여부
+  PARCPRC_ULS_AT: string        // 분양가상한제여부
 }
 
-export interface SaleListResponse {
-  items: SaleItem[]
-  totalCount: number
-  pageNo: number
-  numOfRows: number
-}
-
-// 경쟁률 조회 서비스
+// ============================================================
+// 2. 경쟁률 조회 서비스 (ApplyhomeInfoCmpetRtSvc)
+//    endpoint: getAPTLttotPblancCmpet
+// ============================================================
 export interface CompetitionItem {
-  houseManageNo: string    // 주택관리번호
-  houseName: string        // 단지명
-  sido: string             // 시도
-  gugun: string            // 구군
-  rceptBgnde: string       // 청약접수시작일
-  rceptEndde: string       // 청약접수종료일
-  gnrlRnk1CrspaQu: string  // 일반공급1순위경쟁률
-  gnrlRnk2CrspaQu: string  // 일반공급2순위경쟁률
-  spsplyRceptBgnde: string // 특별공급접수시작일
-  spsplyRceptEndde: string // 특별공급접수종료일
+  HOUSE_MANAGE_NO: number       // 주택관리번호
+  PBLANC_NO: number             // 공고번호
+  MODEL_NO: string              // 모델번호
+  HOUSE_TY: string              // 주택형
+  SUPLY_HSHLDCO: number         // 공급세대수
+  SUBSCRPT_RANK_CODE: number    // 순위 (1 or 2)
+  RESIDE_SECD: string           // 거주코드
+  RESIDE_SENM: string           // 거주지역명
+  REQ_CNT: string               // 접수건수
+  CMPET_RATE: string            // 경쟁률
 }
 
-export interface SpecialSupplyItem {
-  houseManageNo: string      // 주택관리번호
-  houseName: string          // 단지명
-  sido: string
-  gugun: string
-  mfmnHhldco: string         // 다자녀가구 공급세대수
-  mfmnRcept: string          // 다자녀가구 신청자
-  nwwdHhldco: string         // 신혼부부 공급세대수
-  nwwdRcept: string          // 신혼부부 신청자
-  lfefstsHhldco: string      // 생애최초 공급세대수
-  lfefstsRcept: string       // 생애최초 신청자
-  eldlyprntHhldco: string    // 노부모부양 공급세대수
-  eldlyprntRcept: string     // 노부모부양 신청자
-  insttRcmdtnHhldco: string  // 기관추천 공급세대수
-  insttRcmdtnRcept: string   // 기관추천 신청자
+// ============================================================
+// 3. 청약 신청·당첨자 정보 조회 서비스 (ApplyhomeStatSvc)
+//    endpoint: getAPTPrzwnerAreaStat (지역별 당첨자)
+// ============================================================
+export interface WinnerAreaItem {
+  STAT_DE: string               // 제공연월 (YYYYMM)
+  SUBSCRPT_AREA_CODE: string    // 공급지역코드
+  SUBSCRPT_AREA_CODE_NM: string // 공급지역명
+  AGE_30: number                // 30대 이하 당첨건수
+  AGE_40: number                // 40대 당첨건수
+  AGE_50: number                // 50대 당첨건수
+  AGE_60: number                // 60대 이상 당첨건수
 }
 
-// 당첨자 정보 조회 서비스
-export interface WinnerItem {
-  houseManageNo: string   // 주택관리번호
-  houseName: string       // 단지명
-  sido: string
-  gugun: string
-  houseSecd_nm: string    // 주택구분명
-  houseTy: string         // 주택형
-  suplyHhldco: string     // 공급세대수
-  cnpclAplcnt: string     // 취소후보자수
-  przwnerPresnatnDe: string // 당첨자발표일
-  spsplyPrzwner: string   // 특별공급당첨자
-  gnrlPrzwner: string     // 일반공급당첨자
+// 연령별 당첨자 (getAPTPrzwnerAgeStat)
+export interface WinnerAgeItem {
+  STAT_DE: string
+  AGE_30: number
+  AGE_40: number
+  AGE_50: number
+  AGE_60: number
 }
 
+// 지역별 신청자 (getAPTReqstAreaStat)
+export interface ApplicantAreaItem {
+  STAT_DE: string
+  SUBSCRPT_AREA_CODE: string
+  SUBSCRPT_AREA_CODE_NM: string
+  AGE_30: number
+  AGE_40: number
+  AGE_50: number
+  AGE_60: number
+}
+
+// ============================================================
+// 공통 API 응답 래퍼
+// ============================================================
 export interface ApiResponse<T> {
   items: T[]
   totalCount: number

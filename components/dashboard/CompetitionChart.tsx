@@ -24,11 +24,12 @@ function getBarColor(rate: number): string {
 }
 
 export default function CompetitionChart({ items, loading }: Props) {
+  // CompetitionItem은 주택형(HOUSE_TY) + 경쟁률(CMPET_RATE) 구조
   const chartData = items
     .map((item) => ({
-      name: item.houseName?.length > 8 ? item.houseName.slice(0, 8) + '…' : item.houseName,
-      fullName: item.houseName,
-      rate: Number(item.gnrlRnk1CrspaQu ?? 0),
+      name: item.HOUSE_TY?.length > 10 ? item.HOUSE_TY.slice(0, 10) + '…' : item.HOUSE_TY,
+      fullName: `${item.HOUSE_TY} (${item.RESIDE_SENM ?? ''})`,
+      rate: parseFloat(item.CMPET_RATE) || 0,
     }))
     .filter((d) => d.rate > 0)
     .sort((a, b) => b.rate - a.rate)
