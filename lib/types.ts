@@ -87,7 +87,10 @@ export interface ApplicantAreaItem {
 // ============================================================
 export interface ApiResponse<T> {
   items: T[]
-  totalCount: number
+  matchCount: number   // ★ 필터 적용된 실제 결과 수 (KPI/페이지네이션에 사용)
+  totalCount: number   // 전체 데이터 수 (필터 무관 — UI에서 사용 X)
   pageNo: number
   numOfRows: number
+  cached?: boolean
+  fetchedAt?: number
 }
