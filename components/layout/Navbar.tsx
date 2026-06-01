@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 const navItems = [
   { href: '/', label: '대시보드' },
@@ -47,7 +48,7 @@ export default function Navbar() {
               </div>
             </div>
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-1 items-center">
             {navItems.map((item) => {
               const active = pathname === item.href
               return (
@@ -64,6 +65,7 @@ export default function Navbar() {
                 </Link>
               )
             })}
+            <div className="ml-2"><ThemeToggle /></div>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import EChart from '@/components/charts/EChart'
 import DataFreshness from '@/components/DataFreshness'
+import CompetitionMeter from '@/components/ui/CompetitionMeter'
 
 export default function CompetitionPage() {
   return (
@@ -195,46 +196,42 @@ function CompetitionInner() {
 
           {/* 테이블 */}
           <div className="cy-panel overflow-hidden">
-            <div className="p-4 border-b">
-              <h2 className="font-semibold text-gray-800">경쟁률 상세</h2>
+            <div className="p-4" style={{ borderBottom: '1px solid var(--border)' }}>
+              <h2 className="cy-h2" style={{ marginBottom: 0 }}>경쟁률 상세</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 text-gray-500 text-xs">
+                <thead className="cy-thead">
                   <tr>
                     <th className="px-4 py-3 text-left">주택형</th>
                     <th className="px-4 py-3 text-center">공급세대</th>
                     <th className="px-4 py-3 text-center">순위</th>
                     <th className="px-4 py-3 text-left">거주지역</th>
                     <th className="px-4 py-3 text-center">접수건수</th>
-                    <th className="px-4 py-3 text-center">경쟁률</th>
+                    <th className="px-4 py-3 text-left">경쟁률</th>
                   </tr>
                 </thead>
                 <tbody>
                   {isLoading
                     ? Array.from({ length: 5 }).map((_, i) => (
-                        <tr key={i} className="border-t">
-                          <td colSpan={6} className="px-4 py-3"><div className="h-4 bg-gray-100 animate-pulse rounded" /></td>
+                        <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
+                          <td colSpan={6} className="px-4 py-3"><div className="h-4 animate-pulse rounded" style={{ background: 'var(--bg-2)' }} /></td>
                         </tr>
                       ))
                     : items.length === 0
-                      ? <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400">데이터가 없습니다.</td></tr>
-                      : items.map((item: any, i: number) => {
-                          const rate = parseFloat(item.CMPET_RATE) || 0
-                          const rateColor = rate >= 50 ? 'text-red-600 font-bold' : rate >= 10 ? 'text-orange-500 font-semibold' : 'text-gray-700'
-                          return (
-                            <tr key={i} className="border-t hover:bg-gray-50">
-                              <td className="px-4 py-3 font-medium text-gray-900">{item.HOUSE_TY}</td>
-                              <td className="px-4 py-3 text-center text-gray-600">{Number(item.SUPLY_HSHLDCO).toLocaleString()}세대</td>
-                              <td className="px-4 py-3 text-center text-gray-500">{item.SUBSCRPT_RANK_CODE}순위</td>
-                              <td className="px-4 py-3 text-gray-600">{item.RESIDE_SENM}</td>
-                              <td className="px-4 py-3 text-center text-gray-600">{Number(item.REQ_CNT).toLocaleString()}건</td>
-                              <td className={`px-4 py-3 text-center ${rateColor}`}>
-                                {item.CMPET_RATE !== '-' ? `${item.CMPET_RATE} : 1` : '-'}
-                              </td>
-                            </tr>
-                          )
-                        })
+                      ? <tr><td colSpan={6} className="px-4 py-8 text-center" style={{ color: 'var(--ink-4)' }}>데이터가 없습니다.</td></tr>
+                      : items.map((item: any, i: number) => (
+                          <tr key={i} className="cy-row" style={{ borderTop: '1px solid var(--border)' }}>
+                            <td className="px-4 py-3 font-medium" style={{ color: 'var(--ink)' }}>{item.HOUSE_TY}</td>
+                            <td className="px-4 py-3 text-center num" style={{ color: 'var(--ink-2)' }}>{Number(item.SUPLY_HSHLDCO).toLocaleString()}세대</td>
+                            <td className="px-4 py-3 text-center" style={{ color: 'var(--ink-3)' }}>{item.SUBSCRPT_RANK_CODE}순위</td>
+                            <td className="px-4 py-3" style={{ color: 'var(--ink-2)' }}>{item.RESIDE_SENM}</td>
+                            <td className="px-4 py-3 text-center num" style={{ color: 'var(--ink-2)' }}>{Number(item.REQ_CNT).toLocaleString()}건</td>
+                            <td className="px-4 py-3">
+                              <CompetitionMeter value={item.CMPET_RATE === '-' ? 0 : parseFloat(item.CMPET_RATE)} />
+                            </td>
+                          </tr>
+                        ))
                   }
                 </tbody>
               </table>

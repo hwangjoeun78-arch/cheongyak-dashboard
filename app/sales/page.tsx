@@ -23,6 +23,7 @@ function SalesInner() {
   const { startDate, endDate } = getRecentDateRange(6)
   const [sido, setSido] = useState('')
   const [pageNo, setPageNo] = useState(1)
+  const [view, setView] = useState<'list' | 'card'>('list')
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['sales-full', sido, pageNo],
@@ -90,8 +91,23 @@ function SalesInner() {
         </div>
         <div className="flex gap-2 items-center">
           <DataFreshness cached={data?.cached} fetchedAt={data?.fetchedAt} />
+          {/* 뷰 전환 세그먼트 */}
+          <div style={{ display: 'inline-flex', background: 'var(--bg-2)', borderRadius: 'var(--r-sm)', padding: 3, gap: 2 }}>
+            {([['list', '목록'], ['card', '카드']] as const).map(([v, label]) => (
+              <button key={v} onClick={() => setView(v)}
+                style={{
+                  padding: '6px 14px', fontSize: 13, fontWeight: 700, borderRadius: 8,
+                  color: view === v ? 'var(--primary-ink)' : 'var(--ink-2)',
+                  background: view === v ? 'var(--surface)' : 'transparent',
+                  boxShadow: view === v ? 'var(--sh-sm)' : 'none', transition: 'all .15s',
+                }}>
+                {label}
+              </button>
+            ))}
+          </div>
           <select value={sido} onChange={e => { setSido(e.target.value); setPageNo(1) }}
-            className="border rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+            style={{ border: '1px solid var(--border-2)', background: 'var(--surface)', color: 'var(--ink-2)' }}
+            className="rounded-lg px-3 py-2 text-sm focus:outline-none">
             {SIDO_LIST.map(s => <option key={s} value={s}>{s || '전체 지역'}</option>)}
           </select>
         </div>
@@ -130,7 +146,52 @@ function SalesInner() {
         </div>
       </div>
 
-      {/* 테이블 */}
+      {/* 카드형 뷰 */}
+      {view === 'card' && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {isLoading
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="cy-panel" style={{ padding: 18, height: 150 }}>
+                  <div className="h-5 w-32 animate-pulse rounded" style={{ background: 'var(--bg-2)' }} />
+                </div>
+              ))
+            : data?.items.length === 0
+              ? <div className="col-span-full text-center py-12" style={{ color: 'var(--ink-4)' }}>해당 조건의 분양 데이터가 없습니다.</div>
+              : data?.items.map((item, i) => (
+                  <div key={i} className="cy-card cy-panel" style={{ padding: 18 }}>
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--ink)', lineHeight: 1.3 }}>
+                        {item.HMPG_ADRES
+                          ? <a href={item.HMPG_ADRES} target="_blank" rel="noopener noreferrer" className="cy-link">{item.HOUSE_NM}</a>
+                          : item.HOUSE_NM}
+                      </div>
+                      <StatusBadge status={getStatus(item.RCEPT_BGNDE, item.RCEPT_ENDDE)} />
+                    </div>
+                    <div className="flex items-center gap-2 mb-3" style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+                      <span>{item.SUBSCRPT_AREA_CODE_NM}</span>
+                      <span style={{ color: 'var(--ink-4)' }}>·</span>
+                      <span style={{ color: 'var(--ink-3)' }}>{item.HOUSE_DTL_SECD_NM || 'APT'}</span>
+                    </div>
+                    <div className="flex items-center justify-between" style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+                      <div>
+                        <div style={{ fontSize: 11, color: 'var(--ink-4)' }}>공급세대</div>
+                        <div className="num" style={{ fontSize: 16, fontWeight: 800, color: 'var(--ink)' }}>
+                          {item.TOT_SUPLY_HSHLDCO ? `${Number(item.TOT_SUPLY_HSHLDCO).toLocaleString()}` : '-'}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div style={{ fontSize: 11, color: 'var(--ink-4)' }}>청약 마감</div>
+                        <Dday dateStr={item.RCEPT_ENDDE} />
+                      </div>
+                    </div>
+                  </div>
+                ))
+          }
+        </div>
+      )}
+
+      {/* 테이블(목록형) */}
+      {view === 'list' && (
       <div className="cy-panel overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -176,6 +237,7 @@ function SalesInner() {
           </table>
         </div>
       </div>
+      )}
 
       {totalPages > 1 && (
         <div className="flex justify-center gap-2">
